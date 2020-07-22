@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多层嵌套数据渲染</title>
+</head>
+<body>
+  <div id="root">
+    <div>
+      <p>{{name.first}} - {{name.last}}</p>
+    </div>
+  </div>
+  <script>
+    // 实现链式获取对象中的值
+    function getValByPath(obj, path) {
+      // 分割 .
+      let paths = path.split('.')
+      let res = obj
+      let prop
+      while (prop = paths.shift()) {
+        res = res[prop]
+      }
+      return res
+    }
+
+
+    let mark = /\{\{(.+?)\}\}/g
+    // 获取节点模板
+    function compiler (template, data) {
+      // 取出子元素
+      let childNodes = template.childNodes;
+      for (let i = 0; i < childNodes.length; i ++) {
+        // 1元素 3文本
+        let type = childNodes[i].nodeType;
+        if (type === 3) {
+          // 取文本节点的值(nodeValue只在文本节点上有效)
+          let txt = childNodes[i].nodeValue;
+          txt = txt.replace(mark, function(_, g) {
+            // 取出双括号中的值
+            let key = g.trim();
+            // 获取data中映射的值
+            let val = getValByPath(data, key);
+            return val
+          })
+          // 替换模板中的值
+          childNodes[i].nodeValue = txt;
+        } else if (type === 1) {
+          // 如果是元素 执行递归
+          compiler (childNodes[i], data);
+        }
+      }
+    }
+    function Vua (options) {
+      // 构造函数定义习惯  内部数据使用下划线开头, 只读数据使用$开头
+      this._data = options.data;
+      this._el = options.el
+
+      // 准备模板
+      this._templateDOM = document.querySelector(this._el);
+      // 保存模板父元素
+      this._parent = this._templateDOM.parentNode;
+
+      // 渲染
+      this.render()
+    }
+    Vua.prototype.render = function () {
+      this.compiler();
+    }
+    // 数据 与 模板 结合编译
+    Vua.prototype.compiler = function () {
+      // 复制指定dom节点及其子孙节点
+      let realHTML = this._templateDOM.cloneNode(true)
+      // 编译
+      compiler(realHTML, this._data)
+      this.update(realHTML)
+    }
+    // 更新dom元素至页面
+    Vua.prototype.update = function (realHTML) {
+      // 替换页面原始dom
+      this._parent.replaceChild(realHTML, this._templateDOM)
+    }
+
+    let app = new Vua({
+      el: '#root',
+      data: {
+        name: {
+          first: "张",
+          last: "不是张"
+        }
+      }
+    })
+  </script>
+</body>
+</html>
