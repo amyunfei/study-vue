@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>科里化</title>
+</head>
+<body>
+  <!-- 科里化 -->
+  <!-- 一个函数 原本有多个参数, 只传入一个参数, 生成一个新函数, 来接收剩下的参数 -->
+  <!-- 偏函数 -->
+  <!-- 一个函数 原本有多个参数, 只传入一部分参数, 生成一个新函数, 来接收剩下的参数 -->
+  <!-- 高阶函数 -->
+  <!-- 一个函数的参数是一个函数, 函数对参数进行加工, 生成一个新函数 -->
+
+
+  <script>
+    // 为什么使用科里化函数,  提升性能, 缓存一部分能力
+
+    // 判断元素:
+    /*  vue 本质上使用html的字符串作为模板, 将字符串转换为AST(抽象语法树), 再转为虚拟dom
+        模板 -> AST      最消耗性能(字符串解析)
+        AST -> 虚拟dom
+        虚拟dom -> 实际dom
+    */
+
+    // 解析
+    // let s = "1 + 2 * ( 3 + 4 )"
+    // 转换为 "波兰式" 表达式, 然后使用栈结构运算
+
+    // 1.
+    // vue中判断字符串中标签名是原生html标签 还是 自定义组件
+    // 减少循环次数
+
+    let tags = 'div, p, span, li, ul'.split(',')
+
+    function markMap (keys) {
+      let set = {}
+      keys.forEach(key => {set[key] = true})
+
+      return function (tagNames) {
+        return !!set[tagNames.toLowerCase()]
+      }
+    }
+
+    // 2.虚拟dom render
+  </script>
+</body>
+</html>

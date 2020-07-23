@@ -63,10 +63,33 @@
     let root = document.querySelector('#root')
     let vRoot = generateVNode(root)
     console.log(vRoot)
+    console.log(parseVnode(vRoot))
 
     // 把虚拟dom转换为实际dom
-    function parseVnode () {
+    function parseVnode (vnode) {
+      // 判断节点类型
+      let type = vnode.type
+      let _node = null
+      if (type === 3) { // 文本节点
+        return document.createTextNode(vnode.value)
+      } else if (type === 1) { //元素节点
+        _node = document.createElement(vnode.tag)
+        // 属性  键值对类型
+        let data = vnode.data
+        Object.keys(data).forEach(key => {
+          let attrName = key
+          let attrValue = data[key]
+          _node.setAttribute(attrName, attrValue)
+        })
 
+        // 子元素
+        let children = vnode.children
+        children.forEach(subNode => {
+          _node.appendChild(parseVnode(subNode))
+        })
+      }
+
+      return _node
     }
   </script>
 </body>
