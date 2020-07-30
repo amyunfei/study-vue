@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    function Vua(options) {
+      this._data = options.data;
+      this._el = options.el;
+
+      // 挂载虚拟dom
+      this.mount();
+    }
+
+    Vua.prototype.mount = function () {
+
+      // 提供一个render方法: 生成虚拟dom
+      this.render = this.createRenderFn()
+
+      this.mountComponent()
+    }
+
+    Vua.prototype.mountComponent = function () {
+
+      let mount = () => {
+        this.update(this.render())
+      }
+
+      mount.call(this) // 本质上应该交给watcher 调用
+    }
+
+    /*
+      在真正的Vue中使用了二次提交的设计
+    */
+
+    // 生成render函数, 科里化函数, 实现缓存抽象语法树
+    Vua.prototype.createRenderFn = function () {
+
+    }
+
+    // 将虚拟dom渲染到页面中: diff算法
+    Vua.prototype.update = function () {
+
+    }
+  </script>
+</body>
+</html>
